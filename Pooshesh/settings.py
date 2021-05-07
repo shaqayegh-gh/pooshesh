@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     # my apps
     'apps.insurance',
     'rest_framework',
+    'knox',
 
 ]
 
@@ -133,4 +134,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'insurance.User'  # set the CustomUser model
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        'knox.auth.TokenAuthentication',
+    ]
+}
 

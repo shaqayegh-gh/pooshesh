@@ -19,3 +19,6 @@ class ImageField(ProcessedImageField):
         self.format = "JPEG"
         self.options = {"quality": 90}
 
+    def get_upload_to(self, attname):
+        return '%d/_personal_info' % self.user_id
+

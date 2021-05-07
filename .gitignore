@@ -4,10 +4,10 @@
 /myproject/static/
 /myproject/tmp/
 /myproject/media/
-djangogram_venv
+venv
 db.sqlite3
 users_info
-/apps/social/migrations
+/apps/insurance/migrations
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -45,3 +45,4 @@ docs/_build/
 
 # PyBuilder
 target/
+media/

@@ -15,10 +15,8 @@ class Profile(BaseModel):
     birthday = models.DateField(_('Birthday'), blank=True, null=True)
     gender = models.CharField(_('Gender'), max_length=1, choices=(('F', 'Female'), ('M', 'Male')), blank=True, null=True)
     address = models.CharField(_('Address'), max_length=100, blank=True, null=True)
-    country = CountryField(_('Country'), blank=True, null=True)  # install django_countries
-    national_card = ImageField(verbose_name=_('National card'),upload_to='media/')
-    birth_certificate = ImageField(verbose_name=_('Birthday certificate'),upload_to='media/')
-
+    national_card = ImageField(verbose_name=_('National card'),upload_to='media/',blank=True)
+    birth_certificate = ImageField(verbose_name=_('Birthday certificate'),upload_to='media/',blank=True)
 
 
 
@@ -26,9 +24,10 @@ class EvaluationCase(models.Model):
     """
     Each profile can contain several evaluation files, each case for an incident
     """
-    user = models.ForeignKey(User, related_name='eval_cases', on_delete=models.CASCADE)
+    insurer = models.ForeignKey(User, related_name='eval_cases', on_delete=models.CASCADE)
     pending = models.BooleanField(default=True)  # if the case is still pending or not
     date_created = models.DateTimeField(default=timezone.now)
+
 
 
 class Attachment(models.Model):

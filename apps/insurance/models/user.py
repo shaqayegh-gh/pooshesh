@@ -15,18 +15,12 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(_('first name'), max_length=150)
     last_name = models.CharField(_('last name'), max_length=150)
     email = models.EmailField(_('email address'), blank=True, unique=True, max_length=255)
-    USER_TYPE_CHOICES = (
-        (1, 'insurer'),
-        (2, 'assessor'),
-        (3, 'admin'),
-    )
-    user_type = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES,default=1)
+    username = models.EmailField(_('username'),unique=True)
+    is_assessor = models.BooleanField(_('is_insurer') , default=False)
     is_active = models.BooleanField(_('active'), default=True,
                                  help_text=_(
                                      'Designates whether this user should be treated as active. '
-                                     'Unselect this instead of deleting accounts.'
-                                 ),
-                                 )
+                                     'Unselect this instead of deleting accounts.'),)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     phone_number = models.CharField(
         _('Phone number'), unique=True,
@@ -44,7 +38,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
 
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['phone_number','first_name','last_name']
+    REQUIRED_FIELDS = ['phone_number']
 
     objects= UserManager()
     def get_full_name(self):
@@ -74,3 +68,4 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
         Sends an email to this User.
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
