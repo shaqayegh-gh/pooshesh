@@ -8,7 +8,7 @@ from django_extensions.db.fields import AutoSlugField
 
 from apps.insurance.common.validators import mobile_char_check
 from .common import BaseModel
-from ..managers import UserManager
+from ..managers import UserManager, AssessorManager, InsurerManager
 
 
 class User(BaseModel, AbstractBaseUser, PermissionsMixin):
@@ -16,14 +16,14 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('last name'), max_length=150)
     email = models.EmailField(_('email address'), blank=True, unique=True, max_length=255)
     username = models.EmailField(_('username'),unique=True)
-    is_assessor = models.BooleanField(_('is_insurer') , default=False)
+    is_staff = models.BooleanField(_('is_staff') , default=False)
     is_active = models.BooleanField(_('active'), default=True,
                                  help_text=_(
                                      'Designates whether this user should be treated as active. '
                                      'Unselect this instead of deleting accounts.'),)
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     phone_number = models.CharField(
-        _('Phone number'), unique=True,
+        _('Phone number'), blank=True,
         validators=[mobile_char_check], max_length=10,
         error_messages={'wrong_phone_number': _('Wrong phone number')},
         help_text='write your phone number like 9121133445')
@@ -38,15 +38,12 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
 
     EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['phone_number']
 
     objects= UserManager()
     def get_full_name(self):
-        # The user is identified by their email address
         return f"{self.first_name} {self.last_name}"
 
     def get_short_name(self):
-        # The user is identified by their email address
         return f"{self.first_name}"
 
     def __str__(self):
@@ -54,12 +51,10 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
 
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"
-        # Simplest possible answer: Yes, always
         return True
 
     def has_module_perms(self, app_label):
         "Does the user have permissions to view the app `app_label`?"
-        # Simplest possible answer: Yes, always
         return True
 
 
@@ -68,4 +63,17 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
         Sends an email to this User.
         """
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+
+
+
+class InsurerUser(User):
+    objects = InsurerManager()
+
+
+class AssessorUser(User):
+    eval_code = models.BigIntegerField(_('Evaluation code'), unique=True,blank=True,null=True)
+    eval_certificate = models.FileField(_('Evaluation certificate'),blank=True,null=True)
+
+    objects = AssessorManager()
 
