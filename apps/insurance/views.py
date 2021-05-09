@@ -8,10 +8,10 @@ from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, Bl
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from apps.insurance.models.profile import Profile, User, EvaluationCase
+from apps.insurance.models.profile import Profile, User, EvaluationCase, Attachment
 from apps.insurance.serializers import ProfileSerializer, GetUserSerializer, \
     InsurerRegisterSerializer, ChangePasswordSerializer, ProfileUpdateSerializer, \
-    InsurerSerializer, AssessorSerializer, AssessorRegisterSer, EvaluationCaseSer
+    InsurerSerializer, AssessorSerializer, AssessorRegisterSer, EvaluationCaseSer, AttachmentSerializer
 from .models.user import AssessorUser, InsurerUser
 from .serializers import MyTokenObtainPairSerializer
 
@@ -135,3 +135,8 @@ class EvalCaseAPI(CreateAPIView):
     queryset = EvaluationCase.objects.all()
     permission_classes = (IsInsurer, IsAuthenticated)
     serializer_class = EvaluationCaseSer
+
+class AttachmentAPI(CreateAPIView):
+    queryset = Attachment.objects.all()
+    permission_classes = (IsAuthenticated,IsInsurer)
+    serializer_class = AttachmentSerializer

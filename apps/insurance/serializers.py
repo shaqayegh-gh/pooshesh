@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import Profile, EvaluationCase
+from .models import Profile, EvaluationCase, Attachment
 from .models.user import User, AssessorUser, InsurerUser
 
 
@@ -164,8 +164,10 @@ class EvaluationCaseSer(serializers.ModelSerializer):
 
     class Meta:
         model = EvaluationCase
-        fields= ('explanations',"attachments")
+        fields= ('insurer','explanations',"attachments")
 
 
 class AttachmentSerializer(serializers.ModelSerializer):
-    pass
+    class Meta:
+        model = Attachment
+        fields ="__all__"
