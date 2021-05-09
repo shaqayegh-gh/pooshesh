@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from .common import BaseModel, ImageField
-from .user import User,AssessorUser
+from .user import User, AssessorUser, InsurerUser
 
 
 class Profile(BaseModel):
@@ -27,7 +27,7 @@ class EvaluationCase(models.Model):
     """
     Each profile can contain several evaluation files, each case for an incident
     """
-    insurer = models.ForeignKey(User, related_name='eval_cases', on_delete=models.CASCADE)
+    insurer = models.ForeignKey(InsurerUser, related_name='eval_cases', on_delete=models.CASCADE)
     explanations = models.CharField(_('Explanations'), max_length=500, blank=True, null=True,
                                     help_text='Write your explanations about this Case')
     pending = models.BooleanField(default=True)  # if the case is still pending or not
@@ -42,3 +42,6 @@ class Attachment(models.Model):
     name = models.CharField(_('File name'), max_length=150)
     file = models.FileField(_('File'), upload_to="attachments")
     evaluation = models.ForeignKey(EvaluationCase, related_name='attachments', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.evaluation}-attachment{self.pk}"

@@ -133,7 +133,7 @@ class UserValidationSer(serializers.Serializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = "__all__"
+        fields = ('national_code','birthday','gender','address','national_card','birth_certificate')
 
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
@@ -150,12 +150,12 @@ class InsurerSerializer(serializers.ModelSerializer):
         fields = ('first_name', 'last_name', 'email', 'phone_number', "eval_cases")
 
 
-class AssessorUserSerializer(serializers.ModelSerializer):
+class AssessorSerializer(serializers.ModelSerializer):
     evaluations = serializers.RelatedField(many=True, read_only=True)
 
     class Meta:
         model = AssessorUser
-        fields = ('first_name', 'last_name', 'email', 'phone_number', 'is_staff', "evaluations")
+        fields = ('first_name', 'last_name', 'email', 'phone_number','evaluations')
 
 
 
@@ -164,4 +164,8 @@ class EvaluationCaseSer(serializers.ModelSerializer):
 
     class Meta:
         model = EvaluationCase
-        fields= ('insurer','explanations',"attachments")
+        fields= ('explanations',"attachments")
+
+
+class AttachmentSerializer(serializers.ModelSerializer):
+    pass

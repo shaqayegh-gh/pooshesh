@@ -1,8 +1,9 @@
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .views import ProfileAPI, ProfileUpdateAPI, ProfilesListAPI, MyObtainTokenPairView, InsurerRegisterAPI, ChangePasswordAPI, \
-    LogoutAllAPI, LogoutAPI,InsurerAPI,RegisterAssessorAPI,EvalCaseAPI
+from .views import ProfileAPI, ProfileUpdateAPI, ProfilesListAPI, MyObtainTokenPairView, InsurerRegisterAPI, \
+    ChangePasswordAPI, \
+    LogoutAllAPI, LogoutAPI, InsurerAPI, RegisterAssessorAPI, EvalCaseAPI, AssessorUserAPI
 
 urlpatterns = [
     path('login/', MyObtainTokenPairView.as_view(), name='login'),
@@ -20,5 +21,6 @@ urlpatterns = [
         path('<user_id>/update/', ProfileUpdateAPI.as_view(), name='update_profile'),
     ])),
     path('insurer/<user_id>', InsurerAPI.as_view(), name='user_info'),
+    path('assessor/<user_id>', AssessorUserAPI.as_view(), name='assessor_info'),
     path('create-evalcase/',EvalCaseAPI.as_view(),name='create_eval_case')
 ]

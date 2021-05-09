@@ -1,7 +1,7 @@
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.generics import get_object_or_404, UpdateAPIView, RetrieveAPIView, CreateAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated,IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser, BasePermission
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
@@ -11,18 +11,19 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from apps.insurance.models.profile import Profile, User, EvaluationCase
 from apps.insurance.serializers import ProfileSerializer, GetUserSerializer, \
     InsurerRegisterSerializer, ChangePasswordSerializer, ProfileUpdateSerializer, \
-    InsurerSerializer, AssessorUserSerializer, AssessorRegisterSer,EvaluationCaseSer
+    InsurerSerializer, AssessorSerializer, AssessorRegisterSer, EvaluationCaseSer
 from .models.user import AssessorUser, InsurerUser
 from .serializers import MyTokenObtainPairSerializer
 
 
-class IsInsurer(object):
-    pass
-
-class IsAssessor(object):
-    pass
+class IsInsurer(BasePermission):
+    def has_permission(self, request, view):
+        return bool(request.user and (request.user in InsurerUser.objects.all()))
 
 
+class IsAssessor(BasePermission):
+    def has_permission(self, request, view):
+        return bool(request.user and (request.user in AssessorUser.objects.all()))
 
 
 class MyObtainTokenPairView(TokenObtainPairView):
@@ -81,20 +82,16 @@ class LogoutAllAPI(APIView):
 
 class ProfileAPI(APIView):
     permission_classes = (IsAuthenticated,)
+
     def get(self, request, *args, **kwargs):
         user = get_object_or_404(User, pk=kwargs['user_id'])
-        if user.has_perm(IsAdminUser):
-            pass
-        elif user.has_perm(IsAssessor):
-            pass
-        else:
-            pass
         profile_serializer = ProfileSerializer(user.profile)
         return Response(profile_serializer.data)
 
 
 class ProfilesListAPI(APIView):
-    permission_classes = [IsAuthenticated &( IsAdminUser|IsAssessor)]
+    permission_classes = [IsAuthenticated & (IsAdminUser | IsAssessor)]
+
     @staticmethod
     def get(request):
         """List profiles"""
@@ -104,34 +101,37 @@ class ProfilesListAPI(APIView):
 
 class ProfileUpdateAPI(UpdateAPIView):
     """api for updating profile information"""
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [IsAuthenticated, ]
     serializer_class = ProfileUpdateSerializer
     queryset = Profile.objects.all()
     lookup_field = 'user_id'
 
 
 class InsurerAPI(APIView):
-    permission_classes = (IsAuthenticated & (IsAdminUser|IsAssessor))
+    permission_classes = (IsAuthenticated & (IsAdminUser | IsAssessor))
+
     def get(self, request, *args, **kwargs):
-        user = get_object_or_404(User, pk=kwargs['user_id'])
+        user = get_object_or_404(InsurerUser, pk=kwargs['user_id'])
         serializer = InsurerSerializer(user)
         return Response(serializer.data)
 
+
 class AssessorUserAPI(APIView):
-    permission_classes = (IsAuthenticated,IsAdminUser)
+    permission_classes = (IsAuthenticated, IsAdminUser)
+
     def get(self, request, *args, **kwargs):
-        user = get_object_or_404(User, pk=kwargs['user_id'])
-        serializer = AssessorUserSerializer(user)
+        user = get_object_or_404(AssessorUser, pk=kwargs['user_id'])
+        serializer = AssessorSerializer(user)
         return Response(serializer.data)
 
 
 class RegisterAssessorAPI(CreateAPIView):
     queryset = AssessorUser.objects.all()
-    permission_classes = (IsAuthenticated , IsAdminUser)
+    permission_classes = (IsAuthenticated, IsAdminUser)
     serializer_class = AssessorRegisterSer
 
 
 class EvalCaseAPI(CreateAPIView):
     queryset = EvaluationCase.objects.all()
-    permission_classes = (IsInsurer , IsAuthenticated)
+    permission_classes = (IsInsurer, IsAuthenticated)
     serializer_class = EvaluationCaseSer
